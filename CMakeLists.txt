@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.20)
 
 # Fix cmake behavior for CMAKE_CXX_STANDARD with clang on Mac OS X.
 # See cmake documentation on CMP0025 policy for details.
@@ -18,12 +18,24 @@ project(Xolotl
     VERSION ${VERSION}
     LANGUAGES CXX
 )
+enable_language(C)
 
 ## MPI
 find_package(MPI REQUIRED)
 
 ## PETSc
-find_package(PETSc REQUIRED)
+option(Xolotl_BUILD_PETSC "" OFF)
+if(Xolotl_BUILD_PETSC)
+    include(BuildPETSc)
+endif()
+find_package(PETSc)
+if(NOT PETSc_FOUND)
+    message(FATAL_ERROR "
+        PETSc not found
+        Please include the installation prefix in CMAKE_PREFIX_PATH, or,
+        if you would like to build it here, use the option Xolotl_BUILD_PETSC.
+        ")
+endif()
 option(Xolotl_USE_64BIT_INDEX_TYPE "" ${PETSc_USE_64BIT_INDICES})
 
 ## Boost
@@ -38,7 +50,6 @@ find_package(Boost REQUIRED COMPONENTS
 ## HDF5
 #set(HDF5_USE_STATIC_LIBRARIES yes)
 set(HDF5_PREFER_PARALLEL ON)
-enable_language(C)
 find_package(HDF5 REQUIRED)
 if(NOT HDF5_IS_PARALLEL)
    message(STATUS "WARNING! Detected HDF5 installation does not support parallel I/O!")
