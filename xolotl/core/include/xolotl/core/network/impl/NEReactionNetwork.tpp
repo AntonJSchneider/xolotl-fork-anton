@@ -371,10 +371,10 @@ NEReactionGenerator::operator()(IndexType i, IndexType j, TTag tag) const
 		}
 	}
 
-	if ((lo1[Species::Xe] == 1 and lo1[Species::V] == 1 and
-			lo2[Species::Xe] > 0 and lo2[Species::V] > 0) or
-		(lo2[Species::Xe] == 1 and lo2[Species::V] == 1 and
-			lo1[Species::Xe] > 0 and lo1[Species::V] > 0)) {
+	if ((lo1[Species::Xe] <= 1 and lo1[Species::V] == 1 and
+			lo2[Species::Xe] >= 0 and lo2[Species::V] > 0) or
+		(lo2[Species::Xe] <= 1 and lo2[Species::V] == 1 and
+			lo1[Species::Xe] >= 0 and lo1[Species::V] > 0)) {
 		// Look for potential product
 		for (IndexType k = 0; k < numClusters; ++k) {
 			// Get the composition
@@ -499,6 +499,11 @@ NEReactionGenerator::addSinks(IndexType i, TTag tag) const
 	if (clReg.isSimplex() && lo.isOnAxis(Species::V) && lo[Species::V] < 3) {
 		this->addSinkReaction(tag, {i, NetworkType::invalidIndex()});
 	}
+
+        // Xe Anton
+        if (clReg.isSimplex() && lo[Species::Xe] < 2) {
+                this->addSinkReaction(tag, {i, NetworkType::invalidIndex()});
+        }
 }
 
 inline ReactionCollection<NEReactionGenerator::NetworkType>
