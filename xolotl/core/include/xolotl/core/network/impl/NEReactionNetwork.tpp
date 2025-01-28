@@ -371,10 +371,14 @@ NEReactionGenerator::operator()(IndexType i, IndexType j, TTag tag) const
 		}
 	}
 
-	if ((lo1[Species::Xe] <= 1 and lo1[Species::V] == 1 and
-			lo2[Species::Xe] >= 0 and lo2[Species::V] > 0) or
-		(lo2[Species::Xe] <= 1 and lo2[Species::V] == 1 and
-			lo1[Species::Xe] >= 0 and lo1[Species::V] > 0)) {
+	if ((lo1[Species::Xe] == 1 and lo1[Species::V] == 1 and
+			lo2[Species::Xe] > 0 and lo2[Species::V] > 0) or
+		(lo2[Species::Xe] == 1 and lo2[Species::V] == 1 and
+			lo1[Species::Xe] > 0 and lo1[Species::V] > 0) or
+		(lo1[Species::Xe] == 0 and lo1[Species::V] == 1 and
+                        lo2[Species::Xe] > 0 and lo2[Species::V] > 20*lo2[Species::Xe]) or
+                (lo2[Species::Xe] == 0 and lo2[Species::V] == 1 and
+                        lo1[Species::Xe] > 0 and lo1[Species::V] > 20*lo1[Species::Xe])) {
 		// Look for potential product
 		for (IndexType k = 0; k < numClusters; ++k) {
 			// Get the composition
@@ -397,6 +401,7 @@ NEReactionGenerator::operator()(IndexType i, IndexType j, TTag tag) const
 			}
 		}
 	}
+
 
 	// Check the diffusion factors
 	auto diffusionFactor = this->_clusterData.diffusionFactor;
